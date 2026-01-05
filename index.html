@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ศพด. ทต.หัวดง Dashboard (Kid Theme)</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mali: ['Mali', 'cursive'],
+                    },
+                    colors: {
+                        'kid-bg': '#FFF5F5',
+                        'kid-red': '#FF8E8E',
+                        'kid-blue': '#74D0F6', 
+                        'kid-yellow': '#FFEF96',
+                        'kid-green': '#95E1D3',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Google Fonts: Mali (Fun handwriting style) -->
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Mali', cursive;
+            background-color: #FFF9F0;
+            /* Fun polka dot background pattern */
+            background-image: radial-gradient(#FFD1D1 1.5px, transparent 1.5px), radial-gradient(#FFD1D1 1.5px, #FFF9F0 1.5px);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            color: #4A5568;
+        }
+        
+        /* Bouncy Button Animation */
+        .btn-bounce:active {
+            transform: scale(0.95);
+        }
+        .btn-hover:hover {
+            transform: translateY(-3px);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFF5F5; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFB7B2; 
+            border-radius: 20px;
+            border: 2px solid #FFF5F5;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF9E9E; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Icon System Setup ---
+        const createLucideIcon = (iconName) => ({ size = 24, className, strokeWidth = 2.5, ...props }) => {
+            const iconData = lucide.icons[iconName];
+            if (!iconData) return null;
+            return (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={size}
+                    height={size}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={strokeWidth}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={className}
+                    {...props}
+                    dangerouslySetInnerHTML={{ 
+                        __html: iconData.map(child => {
+                            const [tag, attrs] = child;
+                            const attrString = Object.entries(attrs).map(([key, val]) => `${key}="${val}"`).join(' ');
+                            return `<${tag} ${attrString} />`;
+                        }).join('') 
+                    }}
+                />
+            );
+        };
+
+        // Icons
+        const History = createLucideIcon('History');
+        const Info = createLucideIcon('Info');
+        const Users = createLucideIcon('Users');
+        const Megaphone = createLucideIcon('Megaphone');
+        const Baby = createLucideIcon('Baby');
+        const BookOpen = createLucideIcon('BookOpen');
+        const UploadCloud = createLucideIcon('CloudUpload');
+        const Star = createLucideIcon('Star');
+        const ShieldAlert = createLucideIcon('ShieldAlert');
+        const Phone = createLucideIcon('Phone');
+        const LinkIcon = createLucideIcon('Link');
+        const HelpCircle = createLucideIcon('HelpCircle');
+        const ChevronLeft = createLucideIcon('ChevronLeft');
+        const ChevronRight = createLucideIcon('ChevronRight');
+        const HomeIcon = createLucideIcon('Home');
+        const MapPin = createLucideIcon('MapPin');
+        const Calendar = createLucideIcon('Calendar');
+        const User = createLucideIcon('User');
+        const MapIcon = createLucideIcon('Map');
+        const X = createLucideIcon('X');
+        const Target = createLucideIcon('Target');
+        const Award = createLucideIcon('Award');
+        const Heart = createLucideIcon('Heart');
+        const Flower = createLucideIcon('Flower');
+        const Palette = createLucideIcon('Palette');
+        const Book = createLucideIcon('Book');
+        const CheckCircle = createLucideIcon('CheckCircle');
+        const Flag = createLucideIcon('Flag');
+        const Settings = createLucideIcon('Settings');
+        const Smile = createLucideIcon('Smile');
+        const ExternalLink = createLucideIcon('ExternalLink');
+        const Eye = createLucideIcon('Eye');
+        const MessageCircle = createLucideIcon('MessageCircle');
+        const Sun = createLucideIcon('Sun');
+        const Home = createLucideIcon('Home');
+
+        // --- Data ---
+        const personnelData = {
+            level1: [
+                { name: "นางสาวณชนน จันทำโรง", role: "ผู้อำนวยการกองการศึกษา", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765527486/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%E0%B8%81%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A8%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2/%E0%B8%9E%E0%B8%B5%E0%B9%88%E0%B9%83%E0%B8%A22_1_cbv9lq.png" }
+            ],
+            level2: [
+                { name: "นายธรรมนูญ กรเพ็ชร", role: "นักวิชาการการศึกษา", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765527489/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%E0%B8%81%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%A8%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2/%E0%B9%80%E0%B8%95%E0%B9%89_1_oogl9w.png" }
+            ],
+            level3: [
+                { name: "นางอรวรรณ แก้วคำ", role: "ครู รักษาการในตำแหน่งผู้อำนวยการ ศพด.", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765773702/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%20%E0%B8%A8%E0%B8%9E%E0%B8%94/A31447-N-2_plp3p3.jpg" }
+            ],
+            level4: [
+                { name: "นางชุติกาญจน์ ผาเจริญ", role: "ผู้ช่วยครูผู้ช่วย", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765773691/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%20%E0%B8%A8%E0%B8%9E%E0%B8%94/10914_0_m12dzr.jpg" },
+                { name: "นางสาวภัทราพร หมื่นยา", role: "ครูอัตราจ้าง", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765773691/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%20%E0%B8%A8%E0%B8%9E%E0%B8%94/243443_yhb2y1.jpg" }
+            ],
+            level5: [
+                { name: "นางกูล นิลมูล", role: "แม่บ้าน", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765773701/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%20%E0%B8%A8%E0%B8%9E%E0%B8%94/10916_rvtew2.jpg" },
+                { name: "นายนิวัฒน์ โสภาอิน", role: "ภารโรง", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765773716/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9A%E0%B8%B8%E0%B8%84%E0%B8%A5%E0%B8%B2%E0%B8%81%E0%B8%A3%20%E0%B8%A8%E0%B8%9E%E0%B8%94/243830_dtetud.jpg" }
+            ]
+        };
+
+        const aboutInfo = {
+            emblemMeaning: [
+                { title: "อักษร HD", desc: "คำย่อของหัวดง", icon: "H" },
+                { title: "ประกายทอง", desc: "ความรุ่งเรือง", icon: "✨" },
+                { title: "ฐานวงกลม", desc: "ความกลมเกลียว", icon: "🔴" }
+            ],
+            motto: "“ ศูนย์พัฒนาเด็กเล็กของชุมชน พัฒนาคนเพื่อท้องถิ่น”",
+            colors: [
+                { name: "สีม่วง", desc: "ความคิดเฉลียวฉลาด", bg: "bg-purple-300 text-purple-900" },
+                { name: "สีขาว", desc: "คุณธรรม ความบริสุทธิ์", bg: "bg-white border-2 border-gray-200 text-gray-800" }
+            ],
+            flower: "ดอกตะแบก",
+            philosophy: { pali: "“นต.ถิ ปญญา สมา อาภา”", thai: "แสงสว่างเสมอด้วยปัญญาไม่มี" },
+            identity: "“ สะอาดเรียบร้อย สวยงาม ปลอดภัย”", 
+            character: "“ เบิกบาน แจ่มใส”"
+        };
+
+        const visionData = {
+            vision: "มุ่งพัฒนาเด็กให้มีความพร้อม ส่งเสริมการเรียนรู้ตลอดชีวิต และเน้นผู้เรียนเป็นสำคัญ",
+            missions: [
+                { text: "สร้างโอกาสเรียนรู้", icon: <BookOpen size={24}/>, color: "bg-blue-100 text-blue-600" },
+                { text: "บริหารจัดการคุณภาพ", icon: <Settings size={24}/>, color: "bg-orange-100 text-orange-600" },
+                { text: "เน้นผู้เรียนเป็นสำคัญ", icon: <User size={24}/>, color: "bg-green-100 text-green-600" },
+                { text: "พัฒนาครบ 4 ด้าน", icon: <Heart size={24}/>, color: "bg-pink-100 text-pink-600" },
+                { text: "สิ่งแวดล้อมปลอดภัย", icon: <ShieldAlert size={24}/>, color: "bg-purple-100 text-purple-600" },
+                { text: "สัมพันธ์ชุมชน", icon: <HomeIcon size={24}/>, color: "bg-yellow-100 text-yellow-600" }
+            ],
+            goals: ["ผู้เรียนใฝ่เรียนรู้", "ระบบบริหารดีเยี่ยม", "การสอนมีประสิทธิภาพ", "เด็กเก่ง ดี มีสุข", "สิ่งแวดล้อมเอื้อเรียนรู้", "ชุมชนร่วมมือเข้มแข็ง"]
+        };
+
+        const historyTimeline = [
+            {
+                year: "พ.ศ. 2544",
+                title: "จุดเริ่มต้น",
+                content: "ก่อตั้งศูนย์พัฒนาเด็กเล็กเทศบาลตำบลหัวดง สถานที่ตั้งอยู่ภายในโรงเรียนอนุบาลชุมชนหัวดง หมู่ 3 ตำบลแม่พูล อำเภอลับแล จังหวัดอุตรดิตถ์",
+                icon: <Star size={20} />
+            },
+            {
+                year: "การเปลี่ยนแปลง", 
+                title: "ย้ายสู่บ้านหลังใหม่",
+                content: "ย้ายเข้าสู่อาคารเรียนเทศบาลตำบลหัวดง (ป.ฟักอังกูร) ในอาณาเขตที่ราชพัสดุ รับโอนจากโรงเรียนอนุบาลชุมชนหัวดง โดยได้รับความอนุเคราะห์ที่ดินและงบประมาณสนับสนุนจากกรมส่งเสริมการปกครองท้องถิ่น",
+                icon: <HomeIcon size={20} />
+            },
+            {
+                year: "ปัจจุบัน",
+                title: "ศูนย์พัฒนาเด็กเล็กวันนี้",
+                content: "ตั้งอยู่เลขที่ 1 หมู่ 3 ตำบลแม่พูล อำเภอลับแล จังหวัดอุตรดิตถ์ เปิดการเรียนการสอนระดับปฐมวัย 2 ขวบ มุ่งมั่นพัฒนาคุณภาพเด็กเล็กเพื่อท้องถิ่น",
+                icon: <MapPin size={20} />
+            }
+        ];
+
+        const menuItems = [
+            { id: 'history', title: 'ประวัติ', icon: <History />, color: 'bg-[#FF8E8E] text-white', shadow: 'shadow-[#D96B6B]' },
+            { id: 'about', title: 'เกี่ยวกับ', icon: <Info />, color: 'bg-[#95E1D3] text-teal-900', shadow: 'shadow-[#6CB8AA]' },
+            { id: 'personnel', title: 'บุคลากร', icon: <Users />, color: 'bg-[#FFEF96] text-amber-900', shadow: 'shadow-[#D4C46E]' },
+            { id: 'map', title: 'แผนผัง', icon: <MapIcon />, color: 'bg-[#F3C5FF] text-purple-900', shadow: 'shadow-[#C496D1]' },
+            { id: 'vision', title: 'วิสัยทัศน์', icon: <Target />, color: 'bg-[#74D0F6] text-blue-900', shadow: 'shadow-[#4AA6CC]' }, 
+            { id: 'students', title: 'ข้อมูลเด็ก', icon: <Baby />, color: 'bg-[#B5EAD7] text-green-900', shadow: 'shadow-[#8AC0AD]' },
+            { id: 'lessons', title: 'บทเรียน', icon: <BookOpen />, color: 'bg-[#2A9D8F] text-white', shadow: 'shadow-[#1F7A6F]' },
+            { id: 'homework', title: 'ส่งงาน', icon: <UploadCloud />, color: 'bg-[#3DA9FC] text-white', shadow: 'shadow-[#094067]' },
+            { id: 'news', title: 'ข่าวสาร', icon: <Megaphone />, color: 'bg-[#FF70A6] text-white', shadow: 'shadow-[#C94277]' },
+            { id: 'activities', title: 'กิจกรรม', icon: <Star />, color: 'bg-[#4CC9F0] text-white', shadow: 'shadow-[#2A9D8F]' },
+            { id: 'links', title: 'ลิงก์', icon: <LinkIcon />, color: 'bg-[#8338EC] text-white', shadow: 'shadow-[#5A189A]' },
+            { id: 'contact', title: 'ติดต่อ', icon: <Phone />, color: 'bg-[#06D6A0] text-white', shadow: 'shadow-[#049F76]' },
+            { id: 'health', title: 'โรคติดต่อ', icon: <ShieldAlert />, color: 'bg-[#EF476F] text-white', shadow: 'shadow-[#B83253]' },
+            { id: 'appinfo', title: 'เกี่ยวกับ App', icon: <HelpCircle />, color: 'bg-[#FFD166] text-slate-800', shadow: 'shadow-[#D4A63E]' },
+        ];
+
+        const calendarEvents = {
+            "2025-10-01": { title: "เปิดปีงบ 69", type: "work" },
+            "2025-10-13": { title: "วันนวมินทร์ฯ (หยุด)", type: "holiday" },
+            "2025-10-23": { title: "วันปิยะฯ (หยุด)", type: "holiday" },
+            "2025-12-05": { title: "วันพ่อ (หยุด)", type: "holiday" },
+            "2025-12-10": { title: "วันรัฐธรรมนูญ (หยุด)", type: "holiday" },
+            "2025-12-31": { title: "สิ้นปี (หยุด)", type: "holiday" },
+            "2026-01-01": { title: "ปีใหม่ (หยุด)", type: "holiday" },
+            "2026-01-10": { title: "วันเด็ก", type: "activity" },
+            "2026-01-16": { title: "วันครู", type: "activity" },
+            "2026-04-13": { title: "สงกรานต์ (หยุด)", type: "holiday" },
+            "2026-04-14": { title: "สงกรานต์ (หยุด)", type: "holiday" },
+            "2026-04-15": { title: "สงกรานต์ (หยุด)", type: "holiday" },
+            "2026-05-16": { title: "เปิดเทอม 1/69", type: "school" },
+            "2026-07-28": { title: "เฉลิมฯ ร.10 (หยุด)", type: "holiday" },
+            "2026-08-12": { title: "วันแม่ (หยุด)", type: "holiday" },
+        };
+
+        // Components
+        const ImageModal = ({ src, onClose }) => {
+            if (!src) return null;
+            return (
+                <div className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm" onClick={onClose}>
+                    <button onClick={onClose} className="absolute top-4 right-4 text-white p-2 bg-white/20 rounded-full btn-bounce"><X size={32} /></button>
+                    <img src={src} alt="Full Screen" className="max-w-full max-h-[85vh] rounded-[2rem] shadow-2xl border-4 border-white" />
+                </div>
+            );
+        };
+
+        const PersonnelCard = ({ person, isBig = false }) => (
+            <div className={`flex flex-col items-center bg-white rounded-3xl p-3 shadow-lg border-4 border-[#95E1D3] w-full transform transition hover:scale-105 duration-300 ${isBig ? 'mb-4 scale-105 border-[#FF8E8E]' : ''}`}>
+                <div className={`${isBig ? 'w-24 h-24' : 'w-16 h-16'} rounded-full overflow-hidden border-4 border-white shadow-md mb-2 bg-[#FFF9F0]`}>
+                    <img src={person.img} alt={person.name} className="w-full h-full object-cover object-top" 
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://via.placeholder.com/150?text=No+Image"; }} />
+                </div>
+                <h3 className={`font-bold text-slate-700 text-center leading-tight ${isBig ? 'text-lg' : 'text-sm'}`}>{person.name}</h3>
+                <p className={`text-xs font-bold text-center mt-1 px-3 py-1 rounded-full ${isBig ? 'bg-[#FF8E8E] text-white' : 'bg-[#95E1D3] text-teal-900'}`}>{person.role}</p>
+            </div>
+        );
+
+        const Connector = () => <div className="h-6 w-2 bg-[#FFEF96] mx-auto -my-2 relative z-0 rounded-full border-2 border-white"></div>;
+        const BranchConnector = () => <div className="w-1/2 mx-auto border-t-4 border-r-4 border-l-4 border-[#FFEF96] h-6 rounded-t-2xl -mb-4 relative z-0"></div>;
+
+        const CalendarView = () => {
+            const [currentDate, setCurrentDate] = useState(new Date(2025, 9, 1));
+            const [selectedDate, setSelectedDate] = useState(null);
+            const daysInMonth = (year, month) => new Date(year, month + 1, 0).getDate();
+            const firstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
+
+            const handleMonthChange = (offset) => {
+                setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + offset, 1));
+                setSelectedDate(null);
+            };
+
+            const renderDays = () => {
+                const year = currentDate.getFullYear();
+                const month = currentDate.getMonth();
+                const days = daysInMonth(year, month);
+                const firstDay = firstDayOfMonth(year, month);
+                const dayElements = [];
+                const thaiDays = ['อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส'];
+
+                const header = thaiDays.map((day, idx) => (
+                    <div key={day} className={`text-center font-bold text-sm py-1 ${idx === 0 || idx === 6 ? 'text-[#FF8E8E]' : 'text-[#2A9D8F]'}`}>{day}</div>
+                ));
+
+                for (let i = 0; i < firstDay; i++) dayElements.push(<div key={`empty-${i}`} className="h-8"></div>);
+
+                for (let d = 1; d <= days; d++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                    const hasEvent = calendarEvents[dateStr];
+                    const isSelected = selectedDate === dateStr;
+                    
+                    let bgClass = "bg-white hover:bg-[#F0FFF4]";
+                    let textClass = "text-slate-600";
+                    let borderClass = "border-2 border-transparent";
+                    
+                    if (new Date(year, month, d).getDay() % 6 === 0) { bgClass = "bg-[#FFF5F5]"; textClass = "text-[#FF8E8E] font-bold"; }
+                    if (hasEvent) {
+                        if (hasEvent.type === 'holiday') { bgClass = "bg-[#FF8E8E]"; textClass = "text-white"; }
+                        else if (hasEvent.type === 'school') { bgClass = "bg-[#95E1D3]"; textClass = "text-teal-900"; }
+                        else { bgClass = "bg-[#FFEF96]"; textClass = "text-amber-900"; }
+                    }
+                    if (isSelected) { bgClass = "bg-[#8338EC]"; textClass = "text-white font-bold"; borderClass = "border-2 border-white ring-2 ring-[#8338EC]"; }
+
+                    dayElements.push(
+                        <button key={d} onClick={() => setSelectedDate(dateStr)} className={`h-10 w-10 mx-auto rounded-full flex items-center justify-center text-sm transition-all btn-bounce ${bgClass} ${textClass} ${borderClass}`}>
+                            {d}
+                        </button>
+                    );
+                }
+                return <div className="grid grid-cols-7 gap-1 mt-2">{header}{dayElements}</div>;
+            };
+
+            const monthEvents = Object.entries(calendarEvents)
+                .filter(([k]) => k.startsWith(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`))
+                .sort()
+                .map(([date, evt]) => ({ date, ...evt }));
+
+            return (
+                <div className="flex flex-col gap-4">
+                    <div className="bg-white p-4 rounded-[2rem] shadow-xl border-4 border-[#95E1D3]">
+                        <div className="flex justify-between items-center mb-4 bg-[#E0F2F1] p-2 rounded-2xl">
+                            <button onClick={() => handleMonthChange(-1)} className="p-2 bg-white rounded-full text-[#00695C] shadow-sm btn-bounce"><ChevronLeft /></button>
+                            <div className="text-center font-bold text-xl text-[#00695C]">
+                                {["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."][currentDate.getMonth()]} {currentDate.getFullYear() + 543}
+                            </div>
+                            <button onClick={() => handleMonthChange(1)} className="p-2 bg-white rounded-full text-[#00695C] shadow-sm btn-bounce"><ChevronRight /></button>
+                        </div>
+                        {renderDays()}
+                    </div>
+                    <div className="bg-white p-5 rounded-[2rem] shadow-xl border-4 border-[#FF8E8E]">
+                        <h4 className="font-bold text-[#FF8E8E] text-lg mb-3 flex items-center gap-2 bg-[#FFF5F5] p-2 rounded-xl w-fit px-4"><Calendar size={20}/> กิจกรรมเดือนนี้</h4>
+                        <div className="space-y-3">
+                            {monthEvents.length > 0 ? monthEvents.map(e => (
+                                <div key={e.date} className={`flex items-center gap-3 p-3 rounded-2xl border-b-4 ${selectedDate === e.date ? 'bg-slate-50 scale-105' : 'bg-white'} ${e.type === 'holiday' ? 'border-[#FF8E8E] bg-[#FFF5F5]' : e.type === 'school' ? 'border-[#95E1D3] bg-[#E0F2F1]' : 'border-[#FFEF96] bg-[#FFFDE7]'} transition-all`}>
+                                    <div className="font-bold text-slate-500 w-10 text-center text-lg bg-white/50 rounded-lg p-1">{parseInt(e.date.split('-')[2])}</div>
+                                    <div className="text-sm font-bold text-slate-700">{e.title}</div>
+                                </div>
+                            )) : <div className="text-center text-slate-400 py-6 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">ไม่มีกิจกรรม</div>}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activePage, setActivePage] = useState('home');
+            const [selectedImage, setSelectedImage] = useState(null);
+            const reportLink = "https://script.google.com/macros/s/AKfycbyDR6mcJa71hgGTKv3Sw9Cp6slXfdCFSKdmZJjJEkFzXHMZIcdpgbWMXIjnsjjmoCkJjQ/exec";
+            const homeworkLink = "https://script.google.com/macros/s/AKfycbztRPHTwkCC71POXL_8hEAa7x7bcF2RBIgvALVmYir6ardSi4EQjHaBTR4oIhhYW5SFLA/exec";
+            const lessonLink = "https://gornphet.github.io/applesson2/";
+            const newsLink = "https://gornphet.github.io/appnews/";
+            const diseaseLink = "https://gornphet.github.io/appdisease/";
+
+            const renderDashboard = () => (
+                <div className="pb-32">
+                    {/* Banner */}
+                    <div className="relative h-72 rounded-b-[3.5rem] shadow-xl mb-6 overflow-hidden bg-[#74D0F6]">
+                        <img src="https://res.cloudinary.com/dygneumft/image/upload/v1765876173/map/Gemini_Generated_Image_v4y7s1v4y7s1v4y7_rlo9ta.png" alt="BG" className="w-full h-full object-cover opacity-70" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#3DA9FC]/80"></div>
+                        
+                        {/* Decorative Clouds (CSS shapes) */}
+                        <div className="absolute top-10 left-5 w-16 h-16 bg-white/20 rounded-full blur-xl"></div>
+                        <div className="absolute top-20 right-10 w-24 h-24 bg-white/20 rounded-full blur-xl"></div>
+
+                        <div className="absolute inset-0 flex flex-col items-center justify-center pt-6 text-center">
+                            <div className="bg-white p-2 rounded-full shadow-[0_0_20px_rgba(255,230,109,0.6)] border-4 border-[#FFEF96] mb-3 transform hover:scale-110 transition duration-500">
+                                <div className="relative w-24 h-24">
+                                    <div className="absolute -inset-12 flex items-center justify-center animate-spin-slow opacity-100 pointer-events-none">
+                                        <Sun size={160} className="text-[#FFEF96] animate-spin" style={{animationDuration: '12s'}} fill="#FF9F1C" strokeWidth={2} />
+                                    </div>
+                                    <img src="https://res.cloudinary.com/dygneumft/image/upload/v1767149852/logo%20%E0%B8%A8%E0%B8%9E%E0%B8%94/66597422_390220828293072_2595301866271145984_n_oxazyt.jpg" alt="Logo" className="w-full h-full rounded-full relative z-10 border-2 border-white" />
+                                </div>
+                            </div>
+                            <h1 className="text-white text-3xl font-black drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] tracking-wide relative z-10" style={{ textShadow: '2px 2px 0px #3DA9FC' }}>ศพด. ทต.หัวดง</h1>
+                            <span className="text-[#1A535C] text-sm font-bold bg-[#FFEF96] px-5 py-2 rounded-full mt-3 shadow-md border-2 border-white relative z-10 transform -rotate-2">📍 อ.ลับแล จ.อุตรดิตถ์</span>
+                        </div>
+                    </div>
+
+                    {/* Recruitment Banner (New) */}
+                    <div className="px-5 mb-4">
+                        <div className="bg-gradient-to-r from-[#FF9A9E] to-[#FECFEF] p-1 rounded-[2rem] shadow-lg transform hover:scale-[1.02] transition-all cursor-pointer btn-bounce relative overflow-hidden" onClick={() => setActivePage('news')}>
+                            <div className="bg-white rounded-[1.8rem] p-4 flex items-center gap-4 relative z-10 border-4 border-transparent bg-clip-padding">
+                                <div className="bg-[#FF6B6B] w-14 h-14 rounded-full flex items-center justify-center text-white shadow-md border-4 border-[#FFE5E5] shrink-0">
+                                    <Baby size={30} strokeWidth={3} className="animate-bounce" />
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <span className="bg-[#FFD166] text-[#78350F] text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm border border-white">✨ เปิดรับสมัครแล้ว</span>
+                                    </div>
+                                    <h3 className="font-black text-[#E11D48] text-lg leading-tight">ปีการศึกษา 2569</h3>
+                                    <p className="text-xs font-bold text-slate-500">คลิกเพื่อดูรายละเอียดเลย!</p>
+                                </div>
+                                <div className="bg-[#F0FDF4] text-[#22C55E] p-2 rounded-full border-2 border-[#BBF7D0]">
+                                    <ChevronRight size={24} strokeWidth={3} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Menu Grid */}
+                    <div className="px-5">
+                        <h2 className="text-2xl font-black text-slate-700 mb-6 flex items-center gap-3 bg-white/80 backdrop-blur-sm p-3 rounded-2xl w-fit shadow-sm border-2 border-dashed border-slate-300 transform -rotate-1">
+                            <span className="text-3xl">🎈</span> เมนูหลัก
+                        </h2>
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-6 pb-4">
+                            {menuItems.map((item) => (
+                                <button key={item.id} onClick={() => setActivePage(item.id)} className="flex flex-col items-center gap-2 group btn-bounce">
+                                    <div className={`w-20 h-20 rounded-[1.5rem] flex items-center justify-center border-4 border-white shadow-[0_8px_0_0_rgba(0,0,0,0.1)] transition-transform btn-hover ${item.color} ${item.shadow}`}>
+                                        {React.cloneElement(item.icon, { size: 36, strokeWidth: 3 })}
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-600 truncate w-full text-center bg-white/60 px-2 rounded-lg">{item.title}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderContent = () => {
+                switch (activePage) {
+                    case 'history':
+                        return (
+                            <div className="space-y-6 pl-4 relative border-l-4 border-dashed border-[#FFB7B2] ml-4 my-4">
+                                {historyTimeline.map((pt, i) => (
+                                    <div key={i} className="bg-white p-5 rounded-[1.5rem] shadow-md border-4 border-[#FF8E8E] relative ml-6 transform hover:-translate-y-1 transition duration-300">
+                                        <div className="absolute -left-10 top-6 w-8 h-8 bg-[#FF8E8E] rounded-full border-4 border-[#FFF5F5] flex items-center justify-center shadow-sm">
+                                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                                        </div>
+                                        <span className="bg-[#FF8E8E] text-white text-sm font-bold px-3 py-1 rounded-full shadow-sm inline-block mb-2 transform -rotate-2">{pt.year}</span>
+                                        <h3 className="font-bold text-xl text-[#D96B6B]">{pt.title}</h3>
+                                        <p className="text-base text-slate-600 mt-2 leading-relaxed">{pt.content}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    case 'about':
+                        return (
+                            <div className="space-y-6">
+                                <div className="bg-white p-6 rounded-[2rem] shadow-lg border-4 border-[#95E1D3] text-center relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-[#E0F2F1] rounded-bl-full -mr-4 -mt-4 opacity-50"></div>
+                                    <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-[6px] border-[#E0F7FA] shadow-md bg-white">
+                                        <img 
+                                            src="https://res.cloudinary.com/dygneumft/image/upload/v1767149852/logo%20%E0%B8%A8%E0%B8%9E%E0%B8%94/66597422_390220828293072_2595301866271145984_n_oxazyt.jpg" 
+                                            alt="Logo" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <h3 className="font-bold text-xl text-[#00695C] flex items-center justify-center gap-2 mb-4">
+                                        <Award size={28} className="text-[#4DB6AC]" /> ความหมายตราสัญลักษณ์
+                                    </h3>
+                                    <div className="space-y-3 text-left">
+                                        {aboutInfo.emblemMeaning.map((e, i) => (
+                                            <div key={i} className="flex items-center gap-4 bg-[#F0FDFA] p-3 rounded-2xl border-2 border-[#B2DFDB]">
+                                                <div className="bg-[#4DB6AC] text-white w-12 h-12 flex items-center justify-center rounded-xl font-black text-xl shadow-sm transform rotate-3">{e.icon}</div>
+                                                <div><div className="font-bold text-base text-[#00695C]">{e.title}</div><div className="text-sm text-[#00897B]">{e.desc}</div></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="bg-[#FFEF96] p-6 rounded-[2rem] text-amber-900 text-center shadow-lg border-4 border-white relative transform rotate-1">
+                                    <Megaphone size={40} className="mx-auto mb-2 text-[#F9A825]" />
+                                    <h3 className="font-bold text-xl mb-2">คำขวัญ</h3>
+                                    <p className="font-bold italic text-lg bg-white/50 p-4 rounded-xl">"{aboutInfo.motto}"</p>
+                                </div>
+                                <div className="bg-white p-6 rounded-[2rem] border-4 border-purple-200 text-center shadow-lg">
+                                    <div className="flex items-center justify-center gap-2 mb-4 text-purple-600 font-bold text-xl">
+                                        <Palette size={28} /> สีประจำศูนย์
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {aboutInfo.colors.map((c, i) => (
+                                            <div key={i} className={`p-5 rounded-[1.5rem] text-center shadow-md border-4 border-white flex flex-col items-center justify-center h-full ${c.bg} transform hover:scale-105 transition duration-300`}>
+                                                <span className={`font-black text-lg block ${c.name === 'สีขาว' ? 'text-slate-700' : 'text-purple-900'}`}>{c.name}</span>
+                                                <span className={`text-xs font-bold mt-2 bg-white/30 px-2 py-1 rounded-lg ${c.name === 'สีขาว' ? 'text-slate-500' : 'text-purple-800'}`}>{c.desc}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex-1 bg-[#B5EAD7] p-4 rounded-[2rem] text-center border-4 border-white shadow-lg">
+                                        <Book size={36} className="mx-auto text-teal-800 mb-2" />
+                                        <h3 className="font-bold text-teal-900 mb-2">ปรัชญา</h3>
+                                        <p className="text-xs font-bold text-[#1B4332] bg-white/60 px-2 py-2 rounded-xl mb-1">{aboutInfo.philosophy.pali}</p>
+                                        <p className="text-[10px] font-bold text-teal-800 mt-1">{aboutInfo.philosophy.thai}</p>
+                                    </div>
+                                    <div className="flex-1 bg-[#FFB7B2] p-4 rounded-[2rem] text-center border-4 border-white shadow-lg">
+                                        <Flower size={36} className="mx-auto text-[#880E4F] mb-2" />
+                                        <h3 className="font-bold text-[#880E4F] mb-2">ดอกไม้</h3>
+                                        <p className="text-sm font-bold text-[#880E4F] bg-white/60 px-2 py-2 rounded-xl">{aboutInfo.flower}</p>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-[#95E1D3] p-4 rounded-[2rem] text-center border-4 border-white shadow-lg text-teal-900">
+                                        <Smile size={36} className="mx-auto mb-2" />
+                                        <h3 className="font-bold mb-2">อัตลักษณ์</h3>
+                                        <p className="text-xs font-bold bg-white/50 p-2 rounded-xl">{aboutInfo.identity}</p>
+                                    </div>
+                                    <div className="bg-[#FFEF96] p-4 rounded-[2rem] text-center border-4 border-white shadow-lg text-amber-900">
+                                        <Star size={36} className="mx-auto mb-2" />
+                                        <h3 className="font-bold mb-2">เอกลักษณ์</h3>
+                                        <p className="text-xs font-bold bg-white/50 p-2 rounded-xl">{aboutInfo.character}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'personnel':
+                        return (
+                            <div className="flex flex-col items-center">
+                                <div className="bg-[#FFF5F5] p-6 rounded-[3rem] w-full border-4 border-dashed border-[#FFB7B2]">
+                                    {personnelData.level1.map((p, i) => <PersonnelCard key={i} person={p} isBig={true} />)}
+                                    <Connector /><div className="w-full max-w-[200px] gap-3 flex flex-col mx-auto">{personnelData.level2.map((p, i) => <PersonnelCard key={i} person={p} />)}</div>
+                                    <Connector /><div className="w-full max-w-[200px] gap-3 flex flex-col mx-auto">{personnelData.level3.map((p, i) => <PersonnelCard key={i} person={p} />)}</div>
+                                    <Connector /><BranchConnector />
+                                    <div className="grid grid-cols-2 gap-3 w-full mb-6">{personnelData.level4.map((p, i) => <PersonnelCard key={i} person={p} />)}</div>
+                                    <div className="grid grid-cols-2 gap-3 w-full">{personnelData.level5.map((p, i) => <PersonnelCard key={i} person={p} />)}</div>
+                                </div>
+                            </div>
+                        );
+                    case 'map':
+                        return (
+                            <div className="space-y-6">
+                                {[
+                                    { title: "แผนผังที่ 1", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765439660/map/%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%97%E0%B8%B5%E0%B9%88_%E0%B8%97%E0%B8%95.%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%94%E0%B8%87_ixavxb.jpg", color: "border-[#95E1D3]", titleColor: "text-[#00695C]" },
+                                    { title: "แผนผังที่ 2", img: "https://res.cloudinary.com/dygneumft/image/upload/v1765439693/map/%E0%B9%81%E0%B8%9C%E0%B8%99%E0%B8%9C%E0%B8%B1%E0%B8%87%E0%B8%AA%E0%B8%96%E0%B8%B2%E0%B8%99%E0%B8%A8%E0%B8%B6%E0%B8%81%E0%B8%A9%E0%B8%B2%E0%B9%83%E0%B8%99%E0%B8%AA%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%94_%E0%B8%97%E0%B8%95.%E0%B8%AB%E0%B8%B1%E0%B8%A7%E0%B8%94%E0%B8%87_w1rgu0.png", color: "border-[#FFEF96]", titleColor: "text-[#F57F17]" }
+                                ].map((m, i) => (
+                                    <div key={i} className={`bg-white p-4 rounded-[2rem] border-4 ${m.color} shadow-lg transform hover:scale-[1.02] transition duration-300`}>
+                                        <h3 className={`font-bold ${m.titleColor} text-lg mb-3 flex items-center gap-2`}><MapIcon /> {m.title}</h3>
+                                        <img src={m.img} alt={m.title} className="rounded-2xl w-full cursor-pointer shadow-sm border-2 border-slate-100" onClick={() => setSelectedImage(m.img)}/>
+                                    </div>
+                                ))}
+                                <div className="bg-white p-4 rounded-[2rem] border-4 border-[#FF8E8E] shadow-lg">
+                                    <h3 className="font-bold text-[#D96B6B] text-lg mb-3 flex items-center gap-2"><MapPin /> Google Maps</h3>
+                                    <iframe title="Map" className="w-full h-56 rounded-2xl border-2 border-slate-100" src="https://maps.google.com/maps?q=17.6989572,100.0167052&z=15&output=embed"></iframe>
+                                    <a href="https://www.google.com/maps/search/?api=1&query=17.6989572,100.0167052" target="_blank" rel="noreferrer" className="block mt-4 bg-[#FF8E8E] text-white text-center py-3 rounded-xl font-bold text-lg shadow-md btn-bounce">เปิดนำทาง 🚀</a>
+                                </div>
+                            </div>
+                        );
+                    case 'vision':
+                        return (
+                            <div className="space-y-6">
+                                <div className="bg-[#FFFDE7] p-8 rounded-[3rem] border-4 border-[#FFEF96] text-center shadow-lg relative">
+                                    <Eye size={48} className="mx-auto text-[#FBC02D] mb-3" />
+                                    <h3 className="font-black text-[#FBC02D] text-2xl mb-4">วิสัยทัศน์</h3>
+                                    <p className="text-slate-700 font-bold text-lg leading-relaxed bg-white/60 p-4 rounded-2xl">"{visionData.vision}"</p>
+                                </div>
+                                
+                                <div className="bg-white rounded-[2.5rem] border-4 border-[#3DA9FC] p-6 shadow-lg">
+                                    <h3 className="font-bold text-[#0277BD] mb-4 flex gap-2 items-center justify-center text-xl bg-[#E1F5FE] py-2 rounded-xl"><CheckCircle className="text-[#3DA9FC]" /> พันธกิจ</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {visionData.missions.map((m, i) => (
+                                            <div key={i} className="bg-slate-50 p-4 rounded-3xl border-2 border-slate-100 flex flex-col items-center text-center gap-3 shadow-sm hover:shadow-md transition">
+                                                <div className={`p-3 rounded-2xl ${m.color.split(' ')[0]} ${m.color.split(' ')[1]} ring-2 ring-white shadow-sm`}>{m.icon}</div>
+                                                <span className="text-sm font-bold text-slate-600 leading-tight">{m.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="bg-white rounded-[2.5rem] border-4 border-[#95E1D3] p-6 shadow-lg">
+                                    <h3 className="font-bold text-[#00695C] mb-4 flex gap-2 items-center justify-center text-xl bg-[#E0F2F1] py-2 rounded-xl"><Flag className="text-[#4DB6AC]" /> เป้าหมาย</h3>
+                                    <ul className="space-y-3">
+                                        {visionData.goals.map((g, i) => (
+                                            <li key={i} className="flex items-center gap-4 text-sm text-slate-700 font-bold bg-[#F0FDFA] p-3 rounded-2xl border border-[#B2DFDB]">
+                                                <div className="w-8 h-8 bg-[#4DB6AC] text-white rounded-full flex items-center justify-center text-sm font-black shrink-0 shadow-sm">{i+1}</div>
+                                                {g}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        );
+                    case 'students':
+                    case 'homework':
+                        return (
+                            <div className="space-y-4">
+                                <div className={`p-1.5 rounded-[2.5rem] shadow-xl bg-gradient-to-b ${activePage === 'students' ? 'from-[#95E1D3] to-[#2A9D8F]' : 'from-[#3DA9FC] to-[#0277BD]'}`}>
+                                    <div className="bg-white rounded-[2.2rem] p-5 text-center">
+                                        {activePage === 'students' ? <Baby size={48} className="mx-auto text-[#2A9D8F] mb-2" /> : <UploadCloud size={48} className="mx-auto text-[#3DA9FC] mb-2" />}
+                                        <h3 className="font-bold text-slate-700 text-2xl mb-3">{activePage === 'students' ? 'รายงานผลพัฒนาการ' : 'ส่งงานออนไลน์'}</h3>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-2xl mb-4 text-sm text-slate-600 border-2 border-dashed border-slate-200">
+                                            <h4 className="font-bold mb-2 text-center text-base">✨ คำแนะนำ:</h4>
+                                            {activePage === 'students' ? (
+                                                <p>กรอกรหัสประจำตัวนักเรียน (รับจากครูผู้สอน) ลงในช่องค้นหา แล้วกดปุ่มค้นหาเพื่อดูผล</p>
+                                            ) : (
+                                                <p>กรอกข้อมูลให้ครบถ้วน ถ่ายรูปการบ้านให้ชัดเจน กดปุ่มอัปโหลดไฟล์ แล้วกดส่งข้อมูล</p>
+                                            )}
+                                        </div>
+
+                                        <div className="h-[450px] w-full bg-slate-50 rounded-2xl overflow-hidden border-4 border-slate-100 shadow-inner">
+                                            <iframe src={activePage === 'students' ? reportLink : homeworkLink} className="w-full h-full border-0" title="Frame"></iframe>
+                                        </div>
+                                        <a href={activePage === 'students' ? reportLink : homeworkLink} target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'lessons':
+                        return (
+                            <div className="space-y-4">
+                                <div className="p-1.5 rounded-[2.5rem] shadow-xl bg-gradient-to-b from-[#2A9D8F] to-[#1F7A6F]">
+                                    <div className="bg-white rounded-[2.2rem] p-5 text-center">
+                                        <BookOpen size={48} className="mx-auto text-[#2A9D8F] mb-2" />
+                                        <h3 className="font-bold text-slate-700 text-2xl mb-3">บทเรียนออนไลน์</h3>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-2xl mb-4 text-sm text-slate-600 border-2 border-dashed border-slate-200">
+                                            <h4 className="font-bold mb-2 text-center text-base">📚 เรียนสนุก ลุกนั่งสบาย:</h4>
+                                            <p>เลือกหน่วยการเรียนรู้ที่ต้องการศึกษาจากรายการด้านล่างได้เลยจ้า</p>
+                                        </div>
+
+                                        <div className="h-[550px] w-full bg-slate-50 rounded-2xl overflow-hidden border-4 border-slate-100 shadow-inner">
+                                            <iframe src={lessonLink} className="w-full h-full border-0" title="Lessons Frame"></iframe>
+                                        </div>
+                                        <a href={lessonLink} target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'news':
+                        return (
+                            <div className="space-y-4">
+                                <div className="p-1.5 rounded-[2.5rem] shadow-xl bg-gradient-to-b from-[#FF70A6] to-[#C94277]">
+                                    <div className="bg-white rounded-[2.2rem] p-4 text-center">
+                                        <Megaphone size={48} className="mx-auto text-[#FF70A6] mb-2" />
+                                        <h3 className="font-bold text-slate-700 text-2xl mb-3">ข่าวสารประชาสัมพันธ์</h3>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-2xl mb-4 text-sm text-slate-600 border-2 border-dashed border-slate-200">
+                                            <h4 className="font-bold mb-2 text-center text-base">📢 ประกาศๆ:</h4>
+                                            <p>ใช้นิ้วปัดเลื่อนซ้าย-ขวาที่รูปข่าวเพื่อดูภาพถัดไปได้เลยครับ</p>
+                                        </div>
+
+                                        <div className="h-[550px] w-full bg-slate-50 rounded-2xl overflow-hidden border-4 border-slate-100 relative shadow-inner">
+                                            <iframe src={newsLink} className="w-full h-full border-0 block" title="News Frame"></iframe>
+                                        </div>
+                                        <a href={newsLink} target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'activities':
+                        return <CalendarView />;
+                    case 'health':
+                        return (
+                            <div className="space-y-4">
+                                <div className="p-1.5 rounded-[2.5rem] shadow-xl bg-gradient-to-b from-[#EF476F] to-[#B83253]">
+                                    <div className="bg-white rounded-[2.2rem] p-5 text-center">
+                                        <ShieldAlert size={48} className="mx-auto text-[#EF476F] mb-2" />
+                                        <h3 className="font-bold text-slate-700 text-2xl mb-3">ข้อมูลโรคติดต่อ</h3>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-2xl mb-4 text-sm text-slate-600 border-2 border-dashed border-slate-200">
+                                            <h4 className="font-bold mb-2 text-center text-base">🦠 รู้ทันป้องกันโรค:</h4>
+                                            <p>ติดตามข้อมูลข่าวสารเกี่ยวกับโรคติดต่อและการป้องกันได้ที่นี่</p>
+                                        </div>
+
+                                        <div className="h-[550px] w-full bg-slate-50 rounded-2xl overflow-hidden border-4 border-slate-100 shadow-inner">
+                                            <iframe src={diseaseLink} className="w-full h-full border-0" title="Disease Frame"></iframe>
+                                        </div>
+                                        <a href={diseaseLink} target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'links':
+                        return (
+                            <div className="space-y-4">
+                                {[
+                                    { name: "เทศบาลตำบลหัวดง", url: "http://www.huadong.go.th", icon: <HomeIcon />, color: "border-[#FFEF96] text-[#F57F17]", bg: "bg-[#FFFDE7]" },
+                                    { name: "กองการศึกษา", url: "https://gornphet.github.io/edumain/", icon: <BookOpen />, color: "border-[#3DA9FC] text-[#0277BD]", bg: "bg-[#E1F5FE]" },
+                                    { name: "จังหวัดอุตรดิตถ์", url: "http://www2.uttaradit.go.th", icon: <MapPin />, color: "border-[#D1C4E9] text-[#512DA8]", bg: "bg-[#EDE7F6]" },
+                                    { name: "กรมส่งเสริมการปกครองท้องถิ่น", url: "https://www.dla.go.th/", icon: <Flag />, color: "border-[#95E1D3] text-[#00695C]", bg: "bg-[#E0F2F1]" }
+                                ].map((l, i) => (
+                                    <a key={i} href={l.url} target="_blank" rel="noreferrer" className={`flex items-center gap-4 p-5 rounded-[2rem] border-4 shadow-md hover:shadow-lg hover:scale-105 transition-all ${l.color} ${l.bg} text-decoration-none`}>
+                                        <div className="p-3 bg-white/70 rounded-2xl shadow-sm">{l.icon}</div>
+                                        <span className="font-bold text-lg">{l.name}</span>
+                                        <ExternalLink size={20} className="ml-auto opacity-50"/>
+                                    </a>
+                                ))}
+                                
+                                <div className="mt-6 p-4 bg-yellow-50 rounded-3xl border-2 border-dashed border-yellow-300 text-center">
+                                    <p className="text-sm text-yellow-800 font-bold">
+                                        💡 เคล็ดลับ: ถ้ากดแล้วไม่ไป ให้กดค้างไว้แล้วเลือก "เปิดลิงก์" นะครับ
+                                    </p>
+                                </div>
+                            </div>
+                        );
+                    case 'contact':
+                        return (
+                            <div className="space-y-6">
+                                <div className="bg-white p-6 rounded-[2.5rem] border-4 border-[#06D6A0] text-center shadow-lg relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-4 bg-[#06D6A0] opacity-20"></div>
+                                    <div className="bg-[#E0F2F1] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-[#06D6A0] shadow-sm">
+                                        <Megaphone size={48} />
+                                    </div>
+                                    <h3 className="font-bold text-xl text-[#00695C] mb-2">แจ้งเรื่องร้องทุกข์ / ขอรับบริการ</h3>
+                                    <p className="text-sm text-slate-600 mb-6 bg-slate-50 p-2 rounded-xl inline-block">
+                                        ยื่นคำร้องออนไลน์ ผ่าน LINE Official Account เทศบาลตำบลหัวดง
+                                    </p>
+                                    
+                                    <div className="bg-[#F0FDFA] p-6 rounded-[2rem] border-4 border-dashed border-[#06D6A0] mb-6 inline-block transform hover:rotate-2 transition">
+                                        <img 
+                                            src="https://res.cloudinary.com/dygneumft/image/upload/v1767279233/QR%20CODE%20line%20%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B8%9A%E0%B8%B2%E0%B8%A5/545908739_122129932418901421_5742830582382325853_n_li53ev.png" 
+                                            alt="LINE QR Code" 
+                                            className="w-48 h-48 object-contain mx-auto mix-blend-multiply cursor-pointer"
+                                            onClick={() => setSelectedImage("https://res.cloudinary.com/dygneumft/image/upload/v1767279233/QR%20CODE%20line%20%E0%B9%80%E0%B8%97%E0%B8%A8%E0%B8%9A%E0%B8%B2%E0%B8%A5/545908739_122129932418901421_5742830582382325853_n_li53ev.png")}
+                                        />
+                                        <p className="text-sm text-[#00695C] mt-2 font-bold bg-white/50 rounded-lg">แตะเพื่อขยาย 🔍</p>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="bg-[#E0F2F1] p-4 rounded-2xl border-2 border-[#B2DFDB]">
+                                            <p className="text-sm font-bold text-slate-600">Add Line ID:</p>
+                                            <p className="text-2xl font-black text-[#00695C] tracking-wider">@541kcjov</p>
+                                        </div>
+                                        <a 
+                                            href="https://lin.ee/BGlLgO0" 
+                                            target="_blank" 
+                                            rel="noreferrer"
+                                            className="flex items-center justify-center gap-2 w-full bg-[#06D6A0] text-white py-4 rounded-2xl font-bold shadow-md hover:bg-[#059669] hover:scale-105 transition-all text-decoration-none text-lg"
+                                        >
+                                            <MessageCircle size={24} /> คลิกเพิ่มเพื่อน LINE
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div className="bg-white p-8 rounded-[2.5rem] border-4 border-[#3DA9FC] text-center shadow-lg">
+                                    <div className="bg-[#E1F5FE] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-[#3DA9FC] shadow-sm">
+                                        <Phone size={48} />
+                                    </div>
+                                    <h3 className="font-bold text-xl text-[#0277BD] mb-2">เบอร์โทรศัพท์ติดต่อ</h3>
+                                    <p className="text-base font-bold text-slate-600 mb-6">
+                                        เทศบาลตำบลหัวดง
+                                    </p>
+                                    <a 
+                                        href="tel:055427222" 
+                                        className="flex items-center justify-center gap-3 w-full bg-[#3DA9FC] text-white py-4 rounded-2xl font-bold shadow-md hover:bg-[#0284C7] hover:scale-105 transition-all text-decoration-none text-xl"
+                                    >
+                                        <Phone size={28} /> 055-427-222
+                                    </a>
+                                </div>
+                            </div>
+                        );
+                    default:
+                        return (
+                            <div className="text-center py-24 text-slate-300">
+                                <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-slate-100"><Smile size={48} /></div>
+                                <h3 className="text-2xl font-bold">กำลังสร้าง... รอก่อนนะ</h3>
+                            </div>
+                        );
+                }
+            };
+
+            const renderDetail = () => {
+                const item = menuItems.find(i => i.id === activePage);
+                if (!item) return null;
+
+                return (
+                    <div className="min-h-screen bg-[#FFF9F0] pb-32">
+                        {/* Kid-style Navbar */}
+                        <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-md shadow-md px-4 py-3 flex items-center gap-3 rounded-b-[2rem] border-b-4 border-slate-100">
+                            <button onClick={() => setActivePage('home')} className="p-3 bg-[#FFEF96] rounded-full text-amber-800 shadow-sm hover:scale-110 transition"><ChevronLeft size={24} strokeWidth={3} /></button>
+                            <div className={`p-2.5 rounded-2xl ${item.color} shadow-sm border-2 border-white`}>{React.cloneElement(item.icon, { size: 22, strokeWidth: 3 })}</div>
+                            <h2 className="text-xl font-black text-slate-700">{item.title}</h2>
+                        </div>
+
+                        <div className="p-5">
+                            {renderContent()}
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="min-h-screen font-sans max-w-md mx-auto bg-[#FFF9F0] shadow-2xl relative overflow-hidden border-x-4 border-[#FFF0F0]">
+                    {activePage === 'home' ? renderDashboard() : renderDetail()}
+                    <ImageModal src={selectedImage} onClose={() => setSelectedImage(null)} />
+                    
+                    {/* Bottom Nav (Floating Bubble Style) */}
+                    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-[380px] bg-white/95 backdrop-blur-sm rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.12)] flex justify-between p-2.5 border-4 border-[#E2E8F0]">
+                        {[
+                            { id: 'home', icon: <Home />, label: 'หน้าหลัก', color: 'text-[#3DA9FC]', bg: 'bg-[#E1F5FE]' },
+                            { id: 'news', icon: <Megaphone />, label: 'แจ้งเตือน', color: 'text-[#FF70A6]', bg: 'bg-[#FFEBEE]' },
+                            { id: 'activities', icon: <Calendar />, label: 'ปฏิทิน', color: 'text-[#FF9F1C]', bg: 'bg-[#FFF8E1]' },
+                            { id: 'contact', icon: <Phone />, label: 'ติดต่อ', color: 'text-[#06D6A0]', bg: 'bg-[#E0F2F1]' },
+                        ].map(nav => (
+                            <button key={nav.id} onClick={() => setActivePage(nav.id)} className={`flex flex-col items-center justify-center w-16 h-16 rounded-[1.5rem] transition-all duration-300 ${activePage === nav.id ? `${nav.bg} ${nav.color} -translate-y-4 shadow-lg scale-110 border-4 border-white` : 'text-slate-300 hover:text-slate-400'}`}>
+                                {React.cloneElement(nav.icon, { size: activePage === nav.id ? 28 : 26, strokeWidth: 3 })}
+                                {activePage === nav.id && <span className="text-[10px] font-bold mt-0.5">{nav.label}</span>}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
