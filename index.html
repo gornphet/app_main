@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ศพด. ทต.หัวดง</title>
+    <title>ศพด. ทต.หัวดง Dashboard (Kid Theme)</title>
     
     <!-- React & ReactDOM -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -757,6 +757,48 @@
                                 </div>
                             </div>
                         );
+                    case 'appinfo':
+                        return (
+                            <div className="space-y-6">
+                                <div className="bg-white p-6 rounded-[2.5rem] border-4 border-[#FFD166] text-center shadow-lg relative overflow-hidden">
+                                    <div className="bg-[#FFF8E1] w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-[#FFA000] shadow-sm">
+                                        <HelpCircle size={48} />
+                                    </div>
+                                    <h3 className="font-bold text-xl text-[#FFA000] mb-2">ติดตั้งแอปพลิเคชัน</h3>
+                                    <p className="text-sm text-slate-600 mb-6 bg-slate-50 p-2 rounded-xl inline-block">
+                                        สแกน QR Code หรือกดปุ่มด้านล่างเพื่อใช้งาน
+                                    </p>
+                                    
+                                    <div className="bg-white p-4 rounded-[2rem] border-4 border-dashed border-[#FFD166] mb-6 inline-block transform hover:rotate-1 transition">
+                                        <img 
+                                            src="https://res.cloudinary.com/dygneumft/image/upload/v1770859758/%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B9%81%E0%B8%AD%E0%B8%9B/QR_app_%E0%B8%A8%E0%B8%9E%E0%B8%94_srncv3.png" 
+                                            alt="App QR Code" 
+                                            className="w-48 h-48 object-contain mx-auto mix-blend-multiply cursor-pointer"
+                                            onClick={() => setSelectedImage("https://res.cloudinary.com/dygneumft/image/upload/v1770859758/%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%A1%E0%B8%B7%E0%B8%AD%E0%B9%81%E0%B8%AD%E0%B8%9B/QR_app_%E0%B8%A8%E0%B8%9E%E0%B8%94_srncv3.png")}
+                                        />
+                                        <p className="text-sm text-[#FFA000] mt-2 font-bold bg-[#FFF8E1] rounded-lg">แตะเพื่อขยาย 🔍</p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-[#E0F7FA] p-8 rounded-[2.5rem] border-4 border-[#4DD0E1] text-center shadow-lg">
+                                    <div className="bg-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-[#00ACC1] shadow-sm">
+                                        <BookOpen size={40} />
+                                    </div>
+                                    <h3 className="font-bold text-xl text-[#00838F] mb-3">คู่มือการใช้งาน</h3>
+                                    <p className="text-base font-bold text-slate-600 mb-6">
+                                        ศึกษาขั้นตอนการติดตั้งและใช้งานอย่างละเอียด
+                                    </p>
+                                    <a 
+                                        href="https://drive.google.com/file/d/18w28UvDWYRTCr1vyro1kQQwa_A7RNyoN/view" 
+                                        target="_blank" 
+                                        rel="noreferrer"
+                                        className="flex items-center justify-center gap-3 w-full bg-[#4DD0E1] text-white py-4 rounded-2xl font-bold shadow-md hover:bg-[#00BCD4] hover:scale-105 transition-all text-decoration-none text-xl btn-bounce"
+                                    >
+                                        <Book size={28} /> เปิดคู่มือ (PDF)
+                                    </a>
+                                </div>
+                            </div>
+                        );
                     default:
                         return (
                             <div className="text-center py-24 text-slate-300">
@@ -814,5 +856,4 @@
         root.render(<App />);
     </script>
 </body>
-
 </html>
