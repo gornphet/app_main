@@ -145,6 +145,7 @@
         const MessageCircle = createLucideIcon('MessageCircle');
         const Sun = createLucideIcon('Sun');
         const Home = createLucideIcon('Home');
+        const Monitor = createLucideIcon('Monitor');
 
         // --- Data ---
         const personnelData = {
@@ -228,6 +229,7 @@
             { id: 'lessons', title: 'บทเรียน', icon: <BookOpen />, color: 'bg-[#2A9D8F] text-white', shadow: 'shadow-[#1F7A6F]' },
             { id: 'homework', title: 'ส่งงาน', icon: <UploadCloud />, color: 'bg-[#3DA9FC] text-white', shadow: 'shadow-[#094067]' },
             { id: 'news', title: 'ข่าวสาร', icon: <Megaphone />, color: 'bg-[#FF70A6] text-white', shadow: 'shadow-[#C94277]' },
+            { id: 'itinfo', title: 'ข้อมูลสารสนเทศ', icon: <Monitor />, color: 'bg-[#A78BFA] text-white', shadow: 'shadow-[#8B5CF6]' },
             { id: 'activities', title: 'กิจกรรม', icon: <Star />, color: 'bg-[#4CC9F0] text-white', shadow: 'shadow-[#2A9D8F]' },
             { id: 'links', title: 'ลิงก์', icon: <LinkIcon />, color: 'bg-[#8338EC] text-white', shadow: 'shadow-[#5A189A]' },
             { id: 'contact', title: 'ติดต่อ', icon: <Phone />, color: 'bg-[#06D6A0] text-white', shadow: 'shadow-[#049F76]' },
@@ -651,6 +653,27 @@
                                             <iframe src={newsLink} className="w-full h-full border-0 block" title="News Frame"></iframe>
                                         </div>
                                         <a href={newsLink} target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    case 'itinfo':
+                        return (
+                            <div className="space-y-4">
+                                <div className="p-1.5 rounded-[2.5rem] shadow-xl bg-gradient-to-b from-[#A78BFA] to-[#7C3AED]">
+                                    <div className="bg-white rounded-[2.2rem] p-4 text-center">
+                                        <Monitor size={48} className="mx-auto text-[#8B5CF6] mb-2" />
+                                        <h3 className="font-bold text-slate-700 text-2xl mb-3">ข้อมูลสารสนเทศ</h3>
+                                        
+                                        <div className="bg-slate-50 p-4 rounded-2xl mb-4 text-sm text-slate-600 border-2 border-dashed border-slate-200">
+                                            <h4 className="font-bold mb-2 text-center text-base">📊 ระบบสารสนเทศ:</h4>
+                                            <p>ดูข้อมูลและสถิติต่างๆ ของสถานศึกษาได้ที่นี่</p>
+                                        </div>
+
+                                        <div className="h-[550px] w-full bg-slate-50 rounded-2xl overflow-hidden border-4 border-slate-100 relative shadow-inner">
+                                            <iframe src="https://gornphet.github.io/eduit2/" className="w-full h-full border-0 block" title="IT Info Frame"></iframe>
+                                        </div>
+                                        <a href="https://gornphet.github.io/eduit2/" target="_blank" rel="noreferrer" className="inline-block mt-5 text-sm font-bold text-white bg-slate-400 px-6 py-2 rounded-full hover:bg-slate-500 transition shadow-sm">เปิดเต็มจอ ⤢</a>
                                     </div>
                                 </div>
                             </div>
